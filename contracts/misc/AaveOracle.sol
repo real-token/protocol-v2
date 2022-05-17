@@ -6,6 +6,7 @@ import {IERC20} from '../dependencies/openzeppelin/contracts/IERC20.sol';
 
 import {IPriceOracleGetter} from '../interfaces/IPriceOracleGetter.sol';
 import {IChainlinkAggregator} from '../interfaces/IChainlinkAggregator.sol';
+import {IChainlinkOffchainAggregator} from '../interfaces/IChainlinkOffchainAggregator.sol';
 import {SafeERC20} from '../dependencies/openzeppelin/contracts/SafeERC20.sol';
 
 /// @title AaveOracle
@@ -94,7 +95,15 @@ contract AaveOracle is IPriceOracleGetter, Ownable {
       return _fallbackOracle.getAssetPrice(asset);
     } else {
       int256 price = IChainlinkAggregator(source).latestAnswer();
+      int192 minPriceAllowed =
+        IChainlinkOffchainAggregator(IChainlinkAggregator(source).aggregator()).minAnswer();
+      int192 maxPriceAllowed =
+        IChainlinkOffchainAggregator(IChainlinkAggregator(source).aggregator()).maxAnswer();
       if (price > 0) {
+        require(
+          ((minPriceAllowed * 21) / 20 < price < (maxPriceAllowed * 19) / 20),
+          'price out of acceptable range'
+        );
         return uint256(price);
       } else {
         return _fallbackOracle.getAssetPrice(asset);

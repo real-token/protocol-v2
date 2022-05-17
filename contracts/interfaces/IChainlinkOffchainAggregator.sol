@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: agpl-3.0
 pragma solidity 0.6.12;
 
-interface IChainlinkAggregator {
+interface IChainlinkOffchainAggregator {
   function decimals() external view returns (uint8);
-  
+
   function latestAnswer() external view returns (int256);
 
   function latestTimestamp() external view returns (uint256);
@@ -14,8 +14,18 @@ interface IChainlinkAggregator {
 
   function getTimestamp(uint256 roundId) external view returns (uint256);
 
-  function aggregator() external view returns (address);
+  function latestTransmissionDetails()
+    external
+    view
+    returns (
+      bytes16 configDigest,
+      uint32 epoch,
+      uint8 round,
+      int192 latestAnswer,
+      uint64 latestTimestamp
+    );
 
-  event AnswerUpdated(int256 indexed current, uint256 indexed roundId, uint256 timestamp);
-  event NewRound(uint256 indexed roundId, address indexed startedBy);
+  function minAnswer() external view returns (int192);
+
+  function maxAnswer() external view returns (int192);
 }

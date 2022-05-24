@@ -101,7 +101,7 @@ contract AaveOracle is IPriceOracleGetter, Ownable {
         IChainlinkOffchainAggregator(IChainlinkAggregator(source).aggregator()).maxAnswer();
       if (price > 0) {
         require(
-          ((minPriceAllowed * 21) / 20 < price < (maxPriceAllowed * 19) / 20),
+          ((minPriceAllowed * 21) / 20) < price && price < ((maxPriceAllowed * 19) / 20),
           'price out of acceptable range'
         );
         return uint256(price);
